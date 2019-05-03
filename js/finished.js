@@ -3,19 +3,14 @@
   let data = "no data";
   let allYearsData = "no data"
   let svgContainer = ""; // keep SVG reference in global scope
-  let year = '1997';
-  // let allYears = []
+  let year = '1960';
 
   // load data and make scatter plot after window loads
   window.onload = function() {
     svgContainer = d3.select('body')
       .append('svg')
-      .attr('width', 500)
-      .attr('height', 500);
-
-    // d3.csv is basically fetch but it can be be passed a csv file as a parameter
-    // d3.csv("dataEveryYear.csv")
-      // .then((data) => //makeScatterPlot(data));
+      .attr('width', 900)
+      .attr('height', 600);
 
     d3.csv("data/dataEveryYear.csv")
       .then((csvData) => {
@@ -73,13 +68,13 @@
   // make title and axes labels
   function makeLabels() {
     svgContainer.append('text')
-      .attr('x', 100)
-      .attr('y', 40)
+      .attr('x', 250)
+      .attr('y', 30)
       .style('font-size', '14pt')
       .text("World Life Expectancy and Fertility Through Time");
     svgContainer.append('text')
-      .attr('x', 130)
-      .attr('y', 490)
+      .attr('x', 450)
+      .attr('y', 590)
       .style('font-size', '10pt')
       .text('Fertility Rates (Avg Children per Woman)');
     svgContainer.append('text')
@@ -122,7 +117,13 @@
           div.transition()
             .duration(200)
             .style("opacity", .9);
-          div.html(d.location + "<br/>" + numberWithCommas(d["pop_mlns"]*1000000))
+          div.html('<br>' + 
+              'Country: ' + d.location + '<br/>' + 
+              'Year: ' + d.time + '<br/>' +
+              'Life Expectancy: ' + d.life_expectancy + '<br/>' +
+              'Fertility Rate: ' + d.fertility_rate + '<br/>' +
+              'Population: ' + numberWithCommas(d["pop_mlns"]*1000000)
+            )
             .style("left", (d3.event.pageX) + "px")
             .style("top", (d3.event.pageY - 28) + "px");
         })
@@ -133,42 +134,50 @@
         });   
       }
 
-  // draw the axes and ticks
-  function drawAxes(limits, x, y) {
-    // return x value from a row of data
-    let xValue = function(d) {  return +d[x]; }
-    // function to scale x value
-    let xScale = d3.scaleLinear()
-      .domain([limits.xMin - 0.5, limits.xMax + 0.5]) // give domain buffer room
-      .range([50, 450]);
-    // xMap returns a scaled x value from a row of data
-    let xMap = function(d) { return xScale(xValue(d)); };
-    // plot x-axis at bottom of SVG
-    let xAxis = d3.axisBottom().scale(xScale);
-    svgContainer.append("g")
-      .attr('transform', 'translate(0, 450)')
-      .call(xAxis);
-    // return y value from a row of data
-    let yValue = function(d) { return +d[y]}
-    // function to scale y
-    let yScale = d3.scaleLinear()
-      .domain([limits.yMax + 5, limits.yMin - 5]) // give domain buffer
-      .range([50, 450]);
-    // yMap returns a scaled y value from a row of data
-    let yMap = function (d) { return yScale(yValue(d)); };
-    // plot y-axis at the left of SVG
-    let yAxis = d3.axisLeft().scale(yScale);
-    svgContainer.append('g')
-      .attr('transform', 'translate(50, 0)')
-      .call(yAxis);
-    // return mapping and scaling functions
-    return {
-      x: xMap,
-      y: yMap,
-      xScale: xScale,
-      yScale: yScale
-    };
-  }
+    // draw the axes and ticks
+    function drawAxes(limits, x, y) {
+      // return x value from a row of data
+      let xValue = function(d) { return +d[x]; }
+  
+      // function to scale x value
+      let xScale = d3.scaleLinear()
+        .domain([limits.xMin - 0.5, limits.xMax + 0.5]) // give domain buffer room
+        .range([50, 850]);
+  
+      // xMap returns a scaled x value from a row of data
+      let xMap = function(d) { return xScale(xValue(d)); };
+  
+      // plot x-axis at bottom of SVG
+      let xAxis = d3.axisBottom().scale(xScale);
+      svgContainer.append("g")
+        .attr('transform', 'translate(0, 550)')
+        .call(xAxis);
+  
+      // return y value from a row of data
+      let yValue = function(d) { return +d[y]}
+  
+      // function to scale y
+      let yScale = d3.scaleLinear()
+        .domain([limits.yMax + 5, limits.yMin - 5]) // give domain buffer
+        .range([50, 550]);
+  
+      // yMap returns a scaled y value from a row of data
+      let yMap = function (d) { return yScale(yValue(d)); };
+  
+      // plot y-axis at the left of SVG
+      let yAxis = d3.axisLeft().scale(yScale);
+      svgContainer.append('g')
+        .attr('transform', 'translate(50, 0)')
+        .call(yAxis);
+  
+      // return mapping and scaling functions
+      return {
+        x: xMap,
+        y: yMap,
+        xScale: xScale,
+        yScale: yScale
+      };
+    }
 
   // find min and max for arrays of x and y
   function findMinMax(x, y) {
